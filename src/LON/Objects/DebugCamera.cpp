@@ -28,6 +28,7 @@ void lon::DebugCamera::onSpawned()
   m_cameraComponent = spawnComponent<kit::CameraComponent>("cameraComponent");
   m_cameraComponent->attach(this);
   m_cameraComponent->primary();
+  //m_cameraComponent->whitepoint(9.0f); 
 
   m_listenerComponent = spawnComponent<kit::ListenerComponent>("listenerComponent");
   m_listenerComponent->attach(this);
@@ -61,9 +62,9 @@ bool lon::DebugCamera::deserialize(wir::Stream & fromStream)
   return true;
 }
 
-void lon::DebugCamera::pitch(float newPitch)
+void lon::DebugCamera::pitch(float pitchDelta)
 {
-  m_pitch = newPitch;
+  m_pitch += pitchDelta;
 
   if (m_pitch > 90.0f)
   {
@@ -77,9 +78,9 @@ void lon::DebugCamera::pitch(float newPitch)
 
 
 
-void lon::DebugCamera::yaw(float newYaw)
+void lon::DebugCamera::yaw(float yawDelta)
 {
-  m_yaw = newYaw;
+  m_yaw += yawDelta;
 }
 
 

@@ -27,10 +27,6 @@ lon::Module::~Module()
 
 void lon::Module::initialize(kit::Configuration *configuration)
 {
-  LogNotice("/*");
-  LogNotice(" * Legend of Nifelheim - Initialize");
-  LogNotice(" */");
-
   lon::Camera::initializeClass();
   lon::PlayerCharacter::initializeClass();
   lon::PlayerController::initializeClass();
@@ -45,10 +41,6 @@ void lon::Module::initialize(kit::Configuration *configuration)
 
 void lon::Module::shutdown()
 {
-  LogNotice("/*");
-  LogNotice(" * Legend of Nifelheim - Shutdown");
-  LogNotice(" */");
-
   engine()->gameManager()->mode(nullptr);
 
   delete m_singlePlayerMode;
