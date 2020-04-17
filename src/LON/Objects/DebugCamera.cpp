@@ -28,7 +28,7 @@ void lon::DebugCamera::onSpawned()
   m_cameraComponent = spawnComponent<kit::CameraComponent>("cameraComponent");
   m_cameraComponent->attach(this);
   m_cameraComponent->primary();
-  //m_cameraComponent->whitepoint(9.0f); 
+  m_cameraComponent->whitepoint(4.0f); 
 
   m_listenerComponent = spawnComponent<kit::ListenerComponent>("listenerComponent");
   m_listenerComponent->attach(this);

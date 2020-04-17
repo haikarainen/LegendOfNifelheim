@@ -6,7 +6,6 @@
 #include <KIT/Managers/AssetManager.hpp>
 #include <KIT/Managers/GameManager.hpp>
 #include <KIT/Managers/InputManager.hpp>
-#include <KIT/Managers/WindowManager.hpp>
 
 #include <KIT/Game/Object.hpp>
 #include <KIT/Game/World.hpp>
@@ -54,7 +53,6 @@ lon::SinglePlayerMode::~SinglePlayerMode()
 
 void lon::SinglePlayerMode::onModeActivated()
 {
-  engine()->windowManager()->window()->captureMouse(true);
 
   m_playerState = engine()->gameManager()->playerState(0);
 
@@ -112,7 +110,6 @@ void lon::SinglePlayerMode::onModeActivated()
 void lon::SinglePlayerMode::onModeDeactivated()
 {
   world()->destroy();
-  engine()->windowManager()->window()->captureMouse(false);
 }
 
 void lon::SinglePlayerMode::onWorldLoading()
@@ -124,6 +121,7 @@ void lon::SinglePlayerMode::onWorldStart()
   ::camera = world()->spawnObject<lon::DebugCamera>("Camera");
   ::model = world()->spawnObject<kit::Object>("Model");
 
+  /*
   std::vector<kit::MeshPtr> meshes = {
       assetManager()->load<kit::Mesh>("Content/Glock17/Glock17.asset"),
       assetManager()->load<kit::Mesh>("Content/Pipes/PipeLong.asset"),
@@ -142,10 +140,12 @@ void lon::SinglePlayerMode::onWorldStart()
   ::light = world()->spawnObject<kit::Object>("Light");
   auto lc = ::light->spawnComponent<kit::IBLComponent>("ibl");
 
+  glm::vec3 offset(0.0f, 0.0f, 7.0f);
   glm::vec3 randomBounds(10.0f, 0.0f, 10.0f);
-  glm::vec3 randomStart(-randomBounds.x / 2.0f, -randomBounds.y / 2.0f, -randomBounds.z / 2.0f);
-  glm::vec3 randomEnd(randomBounds.x / 2.0f, randomBounds.y / 2.0f, randomBounds.z / 2.0f);
-  uint32_t count = 50;
+  glm::vec3 randomStart(-randomBounds.x / 2.0f, 0.0f, -randomBounds.z / 2.0f);
+  glm::vec3 randomEnd(randomBounds.x / 2.0f, 0.0f, randomBounds.z / 2.0f);
+
+  uint32_t count = 100;
   for (uint32_t x = 0; x < count; x++)
   {
     glm::vec3 location(wir::randomFloat(randomStart.x, randomEnd.x),
@@ -159,8 +159,40 @@ void lon::SinglePlayerMode::onWorldStart()
     comp->mesh(mesh);
     comp->attach(obj);
 
-    obj->localPosition(location);
+    obj->localPosition(offset + location);
   }
+  */
+
+  auto gizmoObj = world()->spawnObject<kit::Object>("Gizmo");
+  auto gizmoComp = gizmoObj->spawnComponent<kit::StaticMeshComponent>("GizmoMesh");
+  auto gizmoMesh = assetManager()->load<kit::Mesh>("Core/Models/Gizmo.asset");
+  gizmoComp->mesh(gizmoMesh);
+
+  auto dust2 = world()->spawnObject("Dust2");
+  dust2->localScale(glm::vec3(0.1f, 0.1f, 0.1f));
+  for (uint32_t i = 0; i < 30; i++)
+  {
+    auto newAsset = assetManager()->load<kit::Mesh>(wir::format("Content/Dust2/Dust2Mesh_%u.asset", i));
+    auto newComp = dust2->spawnComponent<kit::StaticMeshComponent>("DustyMesh");
+    newComp->mesh(newAsset);
+    newComp->attach(dust2);
+  }
+
+  /*
+  auto treeMesh0 = assetManager()->load<kit::Mesh>("Content/TestTree/TestTreeMesh_0.asset");
+  auto treeMesh1 = assetManager()->load<kit::Mesh>("Content/TestTree/TestTreeMesh_1.asset");
+  auto treeObj = world()->spawnObject<kit::Object>("Tree");
+  auto treeComp0 = treeObj->spawnComponent<kit::StaticMeshComponent>("Tree0");
+  auto treeComp1 = treeObj->spawnComponent<kit::StaticMeshComponent>("Tree1");
+  treeComp0->mesh(treeMesh0);
+  treeComp1->mesh(treeMesh1);
+
+  treeComp0->attach(treeObj);
+  treeComp1->attach(treeObj);
+
+  treeObj->localPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
+  treeObj->localScale(glm::vec3(2.0f, 2.0f, 2.0f));
+  */
 }
 
 void lon::SinglePlayerMode::onWorldTick(double seconds)
