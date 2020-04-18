@@ -26,17 +26,6 @@
 #include "LON/Objects/PlayerCharacter.hpp"
 #include "LON/Objects/PlayerController.hpp"
 
-namespace
-{
-  float dd = 0.0f;
-  float yaw = 0.0f;
-  float pitch = 0.0f;
-  bool mleft = false;
-  lon::DebugCamera *camera;
-  kit::Object *model;
-  kit::Object *light;
-} // namespace
-
 lon::SinglePlayerMode::SinglePlayerMode(wir::DynamicArguments const &args)
     : kit::GameMode(args)
 {
@@ -56,52 +45,33 @@ void lon::SinglePlayerMode::onModeActivated()
 
   m_playerState = engine()->gameManager()->playerState(0);
 
-  m_playerState->bindButton("MoveHorizontal", "d", wir::BT_AsAxisPositive);
-  m_playerState->bindButton("MoveHorizontal", "a", wir::BT_AsAxisNegative);
+  m_playerState->bindAxis("MoveRight", "leftvr_horizontal", wir::AT_Normal);
+  m_playerState->bindAxis("MoveForward", "leftvr_vertical", wir::AT_Normal);
 
-  m_playerState->bindButton("MoveVertical", "s", wir::BT_AsAxisPositive);
-  m_playerState->bindButton("MoveVertical", "w", wir::BT_AsAxisNegative);
+  m_playerState->bindAxis("LookHorizontal", "rightvr_horizontal", wir::AT_Normal);
 
-  m_playerState->bindAxis("LookHorizontal", "ma_x", wir::AT_Normal);
-  m_playerState->bindAxis("LookVertical", "ma_y", wir::AT_Normal);
-  m_playerState->bindAxis("Scroll", "ma_sy", wir::AT_Normal);
-  m_playerState->bindButton("MouseLeft", "mb_left", wir::BT_AsAxisPositive);
-  m_playerState->bindButton("MouseRight", "mb_right", wir::BT_AsAxisPositive);
-  m_playerState->bindButton("MouseMiddle", "mb_middle", wir::BT_AsAxisPositive);
-  m_playerState->bindButton("MouseExtra", "mb_extra1", wir::BT_AsAxisPositive);
-
-  for (auto device : engine()->inputManager()->devices())
+  m_playerState->getAxisEvent("MoveForward") += [&](float delta)
   {
-    auto keyboard = dynamic_cast<wir::RawKeyboardDevice *>(device);
-    auto mouse = dynamic_cast<wir::RawMouseDevice *>(device);
-    if (keyboard)
-    {
-      keyboard->assign(m_playerState);
-    }
-    else if (mouse)
-    {
-      mouse->assign(m_playerState);
-    }
-  }
+    if (!m_debugCamera)
+      return;
 
-  m_playerState->getAxisEvent("MoveVertical") += [&](float delta) {
-    camera->moveForward(delta * dd * 2.0f);
+    m_debugCamera->moveForward(delta * engine()->lastDelta() * 2.0f);
   };
 
-  m_playerState->getAxisEvent("MoveHorizontal") += [&](float delta) {
-    camera->moveRight(delta * dd * 2.0f);
+  m_playerState->getAxisEvent("MoveRight") += [&](float delta)
+  {
+    if (!m_debugCamera)
+      return;
+
+    m_debugCamera->moveRight(delta * engine()->lastDelta() * 2.0f);
   };
 
-  m_playerState->getAxisEvent("LookHorizontal") += [&](float delta) {
-    camera->yaw(delta * 0.3f);
-  };
+  m_playerState->getAxisEvent("LookHorizontal") += [&](float delta)
+  {
+    if (!m_debugCamera)
+      return;
 
-  m_playerState->getAxisEvent("LookVertical") += [&](float delta) {
-    camera->pitch(delta * -0.3f);
-  };
-
-  m_playerState->getAxisEvent("MouseMiddle") += [&](float delta) {
-    mleft = delta > 0.5f;
+    m_debugCamera->yaw(delta * 0.3f);
   };
 
   world()->start();
@@ -118,8 +88,7 @@ void lon::SinglePlayerMode::onWorldLoading()
 
 void lon::SinglePlayerMode::onWorldStart()
 {
-  ::camera = world()->spawnObject<lon::DebugCamera>("Camera");
-  ::model = world()->spawnObject<kit::Object>("Model");
+  m_debugCamera = world()->spawnObject<lon::DebugCamera>("Camera");
 
   /*
   std::vector<kit::MeshPtr> meshes = {
@@ -197,7 +166,7 @@ void lon::SinglePlayerMode::onWorldStart()
 
 void lon::SinglePlayerMode::onWorldTick(double seconds)
 {
-  ::dd = seconds;
+
 }
 
 void lon::SinglePlayerMode::onWorldDestroyed()

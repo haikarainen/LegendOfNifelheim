@@ -1,7 +1,7 @@
 #pragma once
 
 #include <KIT/Game/Object.hpp>
-#include <KIT/Game/Components/CameraComponent.hpp>
+#include <KIT/Game/Components/VRCameraComponent.hpp>
 #include <KIT/Game/Components/ListenerComponent.hpp>
 
 namespace lon
@@ -36,25 +36,23 @@ namespace lon
     float yaw() const;
     void yaw(float newYaw);
 
-    float pitch() const;
-    void pitch(float newPitch);
-
     void moveForward(float delta);
     void moveRight(float delta);
     void moveUp(float delta);
 
     
-    kit::CameraComponent *cameraComponent() const;
+    kit::VRCameraComponent *cameraComponent() const;
 
   protected:
 
 
     // rotation around up axis, in degrees
     float m_yaw = 0.0f;
-    float m_pitch = 0.0f;
+    
+    glm::vec3 m_offset;
 
     // The internal camera component
-    kit::CameraComponent *m_cameraComponent = nullptr;
+    kit::VRCameraComponent *m_cameraComponent = nullptr;
     kit::ListenerComponent *m_listenerComponent = nullptr;
   };
 }

@@ -2,10 +2,9 @@
 #pragma once
 
 #include <KIT/Game/GameMode.hpp>
+#include <KIT/Game/PlayerState.hpp>
 
-#include "LON/Objects/PlayerCharacter.hpp"
-#include "LON/Objects/PlayerController.hpp"
-#include "LON/Objects/Camera.hpp"
+#include "LON/Objects/DebugCamera.hpp"
 
 
 namespace lon
@@ -26,26 +25,9 @@ namespace lon
     virtual void onWorldTick(double seconds) override;
     virtual void onWorldDestroyed() override;
 
-    lon::PlayerCharacter *playerCharacter() const
-    {
-      return m_playerCharacter;
-    }
-
-    lon::PlayerController *playerController() const
-    {
-      return m_playerController;
-    }
-
-    lon::Camera *playerCamera() const
-    {
-      return m_playerCamera;
-    }
-
   protected:
 
     kit::PlayerState *m_playerState = nullptr;
-    lon::PlayerCharacter *m_playerCharacter = nullptr;
-    lon::PlayerController *m_playerController = nullptr;
-    lon::Camera *m_playerCamera = nullptr;
+    lon::DebugCamera *m_debugCamera = nullptr;
   };
 }
