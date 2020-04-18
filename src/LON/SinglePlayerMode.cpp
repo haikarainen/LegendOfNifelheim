@@ -133,9 +133,13 @@ void lon::SinglePlayerMode::onWorldStart()
   */
 
   auto gizmoObj = world()->spawnObject<kit::Object>("Gizmo");
+  gizmoObj->localPosition(glm::vec3(3.0f, 3.0f, 3.0f));
+
   auto gizmoComp = gizmoObj->spawnComponent<kit::StaticMeshComponent>("GizmoMesh");
   auto gizmoMesh = assetManager()->load<kit::Mesh>("Core/Models/Gizmo.asset");
   gizmoComp->mesh(gizmoMesh);
+  gizmoComp->attach(gizmoObj);
+
 
   auto dust2 = world()->spawnObject("Dust2");
   dust2->localScale(glm::vec3(0.1f, 0.1f, 0.1f));
