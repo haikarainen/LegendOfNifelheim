@@ -2,6 +2,7 @@
 
 #include <KIT/Game/Object.hpp>
 #include <KIT/Game/Components/VRCameraComponent.hpp>
+#include <KIT/Game/Components/VRHeadComponent.hpp>
 #include <KIT/Game/Components/ListenerComponent.hpp>
 
 namespace lon
@@ -28,11 +29,6 @@ namespace lon
     /** Called on game thread, every tick, after ticking all components. */
     virtual void onTick(double seconds) override;
 
-    /** Begin wir::Serializable interface */
-    virtual bool serialize(wir::Stream & toStream) const override;
-    virtual bool deserialize(wir::Stream & fromStream) override;
-    /** End wir::Serializable interface */
-
     float yaw() const;
     void yaw(float newYaw);
 
@@ -45,14 +41,16 @@ namespace lon
 
   protected:
 
-
-    // rotation around up axis, in degrees
-    float m_yaw = 0.0f;
-    
-    glm::vec3 m_offset;
-
     // The internal camera component
-    kit::VRCameraComponent *m_cameraComponent = nullptr;
-    kit::ListenerComponent *m_listenerComponent = nullptr;
+    kit::VRCameraComponent *m_camera = nullptr;
+    kit::ListenerComponent *m_listener = nullptr;
+
+    kit::Component *m_offsetTranslation = nullptr;
+    kit::Component *m_offsetRotation = nullptr;
+    kit::VRHeadComponent *m_headRotation = nullptr;
+    kit::VRHeadComponent *m_headTranslation = nullptr;
+
+    kit::Component *m_finalTransform = nullptr;
+    
   };
 }

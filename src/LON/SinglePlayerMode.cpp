@@ -47,7 +47,7 @@ void lon::SinglePlayerMode::onModeActivated()
 
   m_playerState->bindAxis("MoveRight", "leftvr_horizontal", wir::AT_Normal);
   m_playerState->bindAxis("MoveForward", "leftvr_vertical", wir::AT_Normal);
-
+  m_playerState->bindAxis("MoveUp", "rightvr_vertical", wir::AT_Normal);
   m_playerState->bindAxis("LookHorizontal", "rightvr_horizontal", wir::AT_Normal);
 
   m_playerState->getAxisEvent("MoveForward") += [&](float delta)
@@ -56,6 +56,13 @@ void lon::SinglePlayerMode::onModeActivated()
       return;
 
     m_debugCamera->moveForward(delta * engine()->lastDelta() * 2.0f);
+  };
+
+  m_playerState->getAxisEvent("MoveUp") += [&](float delta) {
+    if (!m_debugCamera)
+      return;
+
+    m_debugCamera->moveUp(delta * engine()->lastDelta() * 2.0f);
   };
 
   m_playerState->getAxisEvent("MoveRight") += [&](float delta)
@@ -71,7 +78,7 @@ void lon::SinglePlayerMode::onModeActivated()
     if (!m_debugCamera)
       return;
 
-    m_debugCamera->yaw(delta * 0.3f);
+    m_debugCamera->yaw(delta * engine()->lastDelta() * 80.0f);
   };
 
   world()->start();
