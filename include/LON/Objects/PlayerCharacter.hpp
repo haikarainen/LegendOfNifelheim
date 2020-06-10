@@ -3,9 +3,11 @@
 #include <KIT/Game/RigidCharacter.hpp>
 #include <KIT/Game/Components/StaticMeshComponent.hpp>
 
+#include <LON/Export.hpp>
+
 namespace lon
 {
-  class PlayerCharacter : public kit::RigidCharacter
+  class LONAPI PlayerCharacter : public kit::RigidCharacter
   {
     WIR_CLASS_DECLARATION()
 

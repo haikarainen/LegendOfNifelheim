@@ -4,9 +4,11 @@
 #include <KIT/Game/Components/CameraComponent.hpp>
 #include <KIT/Game/Components/ListenerComponent.hpp>
 
+#include <LON/Export.hpp>
+
 namespace lon
 {
-  class Camera : public kit::Object
+  class LONAPI Camera : public kit::Object
   {
     WIR_CLASS_DECLARATION()
 

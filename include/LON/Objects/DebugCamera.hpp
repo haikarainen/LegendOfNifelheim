@@ -1,13 +1,15 @@
 #pragma once
 
 #include <KIT/Game/Object.hpp>
-#include <KIT/Game/Components/VRCameraComponent.hpp>
+#include <KIT/Game/Components/CameraComponent.hpp>
 #include <KIT/Game/Components/VRHeadComponent.hpp>
 #include <KIT/Game/Components/ListenerComponent.hpp>
 
+#include <LON/Export.hpp>
+
 namespace lon
 {
-  class DebugCamera : public kit::Object
+  class LONAPI DebugCamera : public kit::Object
   {
     WIR_CLASS_DECLARATION()
 
@@ -32,23 +34,29 @@ namespace lon
     float yaw() const;
     void yaw(float newYaw);
 
+    float pitch() const;
+    void pitch(float newPitch);
+
     void moveForward(float delta);
     void moveRight(float delta);
     void moveUp(float delta);
 
     
-    kit::VRCameraComponent *cameraComponent() const;
+    kit::CameraComponent *cameraComponent() const;
 
   protected:
 
     // The internal camera component
-    kit::VRCameraComponent *m_camera = nullptr;
+    kit::CameraComponent *m_camera = nullptr;
     kit::ListenerComponent *m_listener = nullptr;
 
     kit::Component *m_offsetTranslation = nullptr;
     kit::Component *m_offsetRotation = nullptr;
     kit::VRHeadComponent *m_headRotation = nullptr;
     kit::VRHeadComponent *m_headTranslation = nullptr;
+
+    float m_yaw = 0.0f;
+    float m_pitch = 0.0f;
 
     kit::Component *m_finalTransform = nullptr;
     

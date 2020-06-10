@@ -2,9 +2,11 @@
 
 #include <KIT/Game/PlayerController.hpp>
 
+#include <LON/Export.hpp>
+
 namespace lon
 {
-  class PlayerController : public kit::PlayerController
+  class LONAPI PlayerController : public kit::PlayerController
   {
     WIR_CLASS_DECLARATION()
 

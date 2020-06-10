@@ -6,6 +6,7 @@
 #include <KIT/Managers/AssetManager.hpp>
 #include <KIT/Managers/GameManager.hpp>
 #include <KIT/Managers/InputManager.hpp>
+#include <KIT/Managers/VRManager.hpp>
 
 #include <KIT/Game/Object.hpp>
 #include <KIT/Game/World.hpp>
@@ -45,10 +46,25 @@ void lon::SinglePlayerMode::onModeActivated()
 
   m_playerState = engine()->gameManager()->playerState(0);
 
-  m_playerState->bindAxis("MoveRight", "leftvr_horizontal", wir::AT_Normal);
-  m_playerState->bindAxis("MoveForward", "leftvr_vertical", wir::AT_Normal);
-  m_playerState->bindAxis("MoveUp", "rightvr_vertical", wir::AT_Normal);
-  m_playerState->bindAxis("LookHorizontal", "rightvr_horizontal", wir::AT_Normal);
+  /*
+  inputManager()->keyboard()->assign(m_playerState);
+  inputManager()->mouse()->assign(m_playerState);
+  */
+  //m_playerState->bindAxis("MoveRight", "leftvr_horizontal", wir::AT_Normal);
+  //m_playerState->bindAxis("MoveForward", "leftvr_vertical", wir::AT_Normal);
+  //m_playerState->bindAxis("MoveUp", "rightvr_vertical", wir::AT_Normal);
+  //m_playerState->bindAxis("LookHorizontal", "rightvr_horizontal", wir::AT_Normal);
+
+  
+  m_playerState->bindButton("MoveRight", "d", wir::BT_AsAxisPositive);
+  m_playerState->bindButton("MoveForward", "w", wir::BT_AsAxisPositive);
+  m_playerState->bindButton("MoveRight", "a", wir::BT_AsAxisNegative);
+  m_playerState->bindButton("MoveForward", "s", wir::BT_AsAxisNegative);
+  m_playerState->bindButton("MoveUp", "space", wir::BT_AsAxisPositive);
+  m_playerState->bindButton("MoveUp", "ctrl", wir::BT_AsAxisNegative);
+
+  m_playerState->bindAxis("LookHorizontal", "ma_x", wir::AT_Normal);
+  m_playerState->bindAxis("LookVertical", "ma_y", wir::AT_Normal);
 
   m_playerState->getAxisEvent("MoveForward") += [&](float delta)
   {
@@ -78,14 +94,28 @@ void lon::SinglePlayerMode::onModeActivated()
     if (!m_debugCamera)
       return;
 
-    m_debugCamera->yaw(delta * engine()->lastDelta() * 80.0f);
+    m_debugCamera->yaw(delta * engine()->lastDelta() * 10.0f);
   };
+
+  m_playerState->getAxisEvent("LookVertical") += [&](float delta) {
+    if (!m_debugCamera)
+      return;
+
+    m_debugCamera->pitch(-delta * engine()->lastDelta() * 10.0f);
+  };
+
+  auto font = assetManager()->loadSync<kit::Font>("Core/Fonts/System.asset");
+
+  m_debugText = new kit::Text(font, 20.f, U"Procedural Grass Test");
+  m_debugText->position(glm::vec2(8.0f, 8.0f));
+  m_debugText->alignment(kit::TA_TopLeft);
 
   world()->start();
 }
 
 void lon::SinglePlayerMode::onModeDeactivated()
 {
+  delete m_debugText;
   world()->destroy();
 }
 
@@ -96,7 +126,8 @@ void lon::SinglePlayerMode::onWorldLoading()
 void lon::SinglePlayerMode::onWorldStart()
 {
   m_debugCamera = world()->spawnObject<lon::DebugCamera>("Camera");
-
+  m_grass = world()->spawnObject<lon::ProceduralGrass>("Grass");
+  
   /*
   std::vector<kit::MeshPtr> meshes = {
       assetManager()->load<kit::Mesh>("Content/Glock17/Glock17.asset"),
@@ -112,9 +143,6 @@ void lon::SinglePlayerMode::onWorldStart()
       assetManager()->load<kit::Mesh>("Content/Pipes/SmallPipeSmallUturn.asset"),
       assetManager()->load<kit::Mesh>("Content/Pipes/SmallPipeTurn.asset"),
   };
-
-  ::light = world()->spawnObject<kit::Object>("Light");
-  auto lc = ::light->spawnComponent<kit::IBLComponent>("ibl");
 
   glm::vec3 offset(0.0f, 0.0f, 7.0f);
   glm::vec3 randomBounds(10.0f, 0.0f, 10.0f);
@@ -136,18 +164,18 @@ void lon::SinglePlayerMode::onWorldStart()
     comp->attach(obj);
 
     obj->localPosition(offset + location);
-  }
-  */
+  }*/
+  
 
   auto gizmoObj = world()->spawnObject<kit::Object>("Gizmo");
-  gizmoObj->localPosition(glm::vec3(3.0f, 3.0f, 3.0f));
+  gizmoObj->localPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
   auto gizmoComp = gizmoObj->spawnComponent<kit::StaticMeshComponent>("GizmoMesh");
   auto gizmoMesh = assetManager()->load<kit::Mesh>("Core/Models/Gizmo.asset");
   gizmoComp->mesh(gizmoMesh);
   gizmoComp->attach(gizmoObj);
 
-
+  /*
   auto dust2 = world()->spawnObject("Dust2");
   dust2->localScale(glm::vec3(0.1f, 0.1f, 0.1f));
   for (uint32_t i = 0; i < 30; i++)
@@ -156,28 +184,22 @@ void lon::SinglePlayerMode::onWorldStart()
     auto newComp = dust2->spawnComponent<kit::StaticMeshComponent>("DustyMesh");
     newComp->mesh(newAsset);
     newComp->attach(dust2);
-  }
-
-  /*
-  auto treeMesh0 = assetManager()->load<kit::Mesh>("Content/TestTree/TestTreeMesh_0.asset");
-  auto treeMesh1 = assetManager()->load<kit::Mesh>("Content/TestTree/TestTreeMesh_1.asset");
-  auto treeObj = world()->spawnObject<kit::Object>("Tree");
-  auto treeComp0 = treeObj->spawnComponent<kit::StaticMeshComponent>("Tree0");
-  auto treeComp1 = treeObj->spawnComponent<kit::StaticMeshComponent>("Tree1");
-  treeComp0->mesh(treeMesh0);
-  treeComp1->mesh(treeMesh1);
-
-  treeComp0->attach(treeObj);
-  treeComp1->attach(treeObj);
-
-  treeObj->localPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-  treeObj->localScale(glm::vec3(2.0f, 2.0f, 2.0f));
-  */
+  }*/
+  
 }
 
 void lon::SinglePlayerMode::onWorldTick(double seconds)
 {
+  m_debugText->render();
 
+  if (inputManager()->keyboard()->buttonState("f1")->isDown)
+  {
+    vrManager()->enable();
+  }
+  if (inputManager()->keyboard()->buttonState("f2")->isDown)
+  {
+    vrManager()->disable();
+  }
 }
 
 void lon::SinglePlayerMode::onWorldDestroyed()

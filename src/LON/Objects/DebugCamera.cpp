@@ -30,7 +30,7 @@ void lon::DebugCamera::onInitialize()
   m_headRotation = spawnComponent<kit::VRHeadComponent>("headRotation");
   m_headRotation->TrackPosition = false;
   m_finalTransform = spawnComponent<kit::Component>("finalTransform");
-  m_camera = spawnComponent<kit::VRCameraComponent>("cameraComponent");
+  m_camera = spawnComponent<kit::CameraComponent>("cameraComponent");
   m_listener = spawnComponent<kit::ListenerComponent>("listenerComponent");
 
 
@@ -57,17 +57,29 @@ void lon::DebugCamera::onDestroyed()
 
 void lon::DebugCamera::onTick(double seconds)
 {
+  if (!m_offsetRotation)
+    return;
 
+  auto newRotation = glm::rotate(glm::quat(), glm::radians(m_yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+  newRotation = glm::rotate(newRotation, glm::radians(m_pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+
+  m_offsetRotation->localRotation(newRotation);
 }
 
 
 void lon::DebugCamera::yaw(float yawDelta)
 {
+  m_yaw += yawDelta;
+}
 
-  if (!m_offsetRotation)
-    return;
-  
-  m_offsetRotation->rotateY(yawDelta);
+float lon::DebugCamera::pitch() const
+{
+  return m_pitch;
+}
+
+void lon::DebugCamera::pitch(float newPitch)
+{
+  m_pitch += newPitch;
 }
 
 
@@ -95,7 +107,7 @@ void lon::DebugCamera::moveUp(float delta)
   m_offsetTranslation->translate(kit::Transformable::up() * delta);
 }
 
-kit::VRCameraComponent *lon::DebugCamera::cameraComponent() const
+kit::CameraComponent *lon::DebugCamera::cameraComponent() const
 {
   return m_camera;
 }

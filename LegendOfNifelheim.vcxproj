@@ -67,7 +67,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(KITOutputDir)\bin\$(Configuration)\;$(WIROutputDir)\bin\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KIT.Engine.lib;WIR.Framework.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KIT.Engine.lib;Odin.lib;WIR.Framework.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>
@@ -99,7 +99,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(KITOutputDir)\bin\$(Configuration)\;$(WIROutputDir)\bin\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>KIT.Engine.lib;WIR.Framework.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KIT.Engine.lib;Odin.lib;WIR.Framework.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>
@@ -115,21 +115,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\LON\Export.hpp" />
+    <ClInclude Include="include\LON\MaterialClasses\GrassMaterial.hpp" />
     <ClInclude Include="include\LON\Module.hpp" />
     <ClInclude Include="include\LON\Objects\Camera.hpp" />
     <ClInclude Include="include\LON\Objects\DebugCamera.hpp" />
     <ClInclude Include="include\LON\Objects\MapEditor.hpp" />
     <ClInclude Include="include\LON\Objects\PlayerCharacter.hpp" />
     <ClInclude Include="include\LON\Objects\PlayerController.hpp" />
+    <ClInclude Include="include\LON\Objects\Nature\ProceduralGrass.hpp" />
     <ClInclude Include="include\LON\SinglePlayerMode.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="generated\**\*.cpp" />
+    <ClCompile Include="generated\LON\Export.generated.cpp" />
+    <ClCompile Include="generated\LON\MaterialClasses\GrassMaterial.generated.cpp" />
+    <ClCompile Include="generated\LON\Module.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\Camera.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\DebugCamera.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\MapEditor.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\Nature\ProceduralGrass.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\PlayerCharacter.generated.cpp" />
+    <ClCompile Include="generated\LON\Objects\PlayerController.generated.cpp" />
+    <ClCompile Include="generated\LON\SinglePlayerMode.generated.cpp" />
     <ClCompile Include="src\LON\Main.cpp" />
+    <ClCompile Include="src\LON\MaterialClasses\GrassMaterial.cpp" />
     <ClCompile Include="src\LON\Module.cpp" />
     <ClCompile Include="src\LON\Objects\Camera.cpp" />
     <ClCompile Include="src\LON\Objects\DebugCamera.cpp" />
     <ClCompile Include="src\LON\Objects\MapEditor.cpp" />
+    <ClCompile Include="src\LON\Objects\Nature\ProceduralGrass.cpp" />
     <ClCompile Include="src\LON\Objects\PlayerCharacter.cpp" />
     <ClCompile Include="src\LON\Objects\PlayerController.cpp" />
     <ClCompile Include="src\LON\SinglePlayerMode.cpp" />

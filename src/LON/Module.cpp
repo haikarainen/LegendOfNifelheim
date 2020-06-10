@@ -8,6 +8,8 @@
 #include "LON/Objects/PlayerController.hpp"
 #include "LON/Objects/MapEditor.hpp"
 
+#include "LON/MaterialClasses/GrassMaterial.hpp"
+
 #include <KIT/Engine.hpp>
 #include <KIT/Managers/GameManager.hpp>
 #include <KIT/Configuration.hpp>
@@ -32,6 +34,9 @@ void lon::Module::initialize(kit::Configuration *configuration)
   lon::PlayerController::initializeClass();
   lon::MapEditor::initializeClass();
   lon::DebugCamera::initializeClass();
+  lon::ProceduralGrass::initializeClass();
+
+  lon::GrassMaterial::initializeClass();
 
   m_singlePlayerMode = new lon::SinglePlayerMode(engine()->gameManager());
 

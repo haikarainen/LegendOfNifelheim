@@ -8,10 +8,12 @@
 #include <vector>
 #include <array>
 
+#include <LON/Export.hpp>
+
 namespace lon
 {
 
-  class MapEditor : public kit::Object
+  class LONAPI MapEditor : public kit::Object
   {
     WIR_CLASS_DECLARATION()
 
