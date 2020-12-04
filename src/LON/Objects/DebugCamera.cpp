@@ -21,14 +21,11 @@ lon::DebugCamera::~DebugCamera()
 void lon::DebugCamera::onInitialize() 
 {
   m_offsetTranslation = spawnComponent<kit::Component>("offsetTranslation");
-  m_headTranslation = spawnComponent<kit::VRHeadComponent>("headTranslation");
-  m_headTranslation->TrackRotation = false;
+  m_headTranslation = spawnComponent<kit::Component>("headTranslation");
 
   m_offsetRotation = spawnComponent<kit::Component>("offsetRotation");
-  m_headTranslation->OffsetRotation = m_offsetRotation;
 
-  m_headRotation = spawnComponent<kit::VRHeadComponent>("headRotation");
-  m_headRotation->TrackPosition = false;
+  m_headRotation = spawnComponent<kit::Component>("headRotation");
   m_finalTransform = spawnComponent<kit::Component>("finalTransform");
   m_camera = spawnComponent<kit::CameraComponent>("cameraComponent");
   m_listener = spawnComponent<kit::ListenerComponent>("listenerComponent");
@@ -80,6 +77,7 @@ float lon::DebugCamera::pitch() const
 void lon::DebugCamera::pitch(float newPitch)
 {
   m_pitch += newPitch;
+  m_pitch = glm::clamp(m_pitch, -90.0f, 90.0f);
 }
 
 

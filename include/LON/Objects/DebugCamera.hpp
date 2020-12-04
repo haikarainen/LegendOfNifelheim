@@ -52,8 +52,10 @@ namespace lon
 
     kit::Component *m_offsetTranslation = nullptr;
     kit::Component *m_offsetRotation = nullptr;
-    kit::VRHeadComponent *m_headRotation = nullptr;
-    kit::VRHeadComponent *m_headTranslation = nullptr;
+    kit::Component *m_headRotation = nullptr;
+    kit::Component *m_headTranslation = nullptr;
+    //kit::VRHeadComponent *m_headRotation = nullptr;
+    //kit::VRHeadComponent *m_headTranslation = nullptr;
 
     float m_yaw = 0.0f;
     float m_pitch = 0.0f;

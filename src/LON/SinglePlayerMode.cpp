@@ -3,10 +3,14 @@
 
 #include <KIT/Engine.hpp>
 
+#include <KIT/Assets/Texture.hpp>
+
 #include <KIT/Managers/AssetManager.hpp>
 #include <KIT/Managers/GameManager.hpp>
 #include <KIT/Managers/InputManager.hpp>
 #include <KIT/Managers/VRManager.hpp>
+#include <KIT/Managers/RenderManager.hpp>
+#include <KIT/Renderer/Renderer.hpp>
 
 #include <KIT/Game/Object.hpp>
 #include <KIT/Game/World.hpp>
@@ -26,6 +30,12 @@
 #include "LON/Objects/MapEditor.hpp"
 #include "LON/Objects/PlayerCharacter.hpp"
 #include "LON/Objects/PlayerController.hpp"
+#include "LON/Components/SkyDomeComponent.hpp"
+#include "LON/Components/WaterComponent.hpp"
+
+#include <KIT/Rendering/SpriteRenderer.hpp>
+
+#include <WIR/String.hpp>
 
 lon::SinglePlayerMode::SinglePlayerMode(wir::DynamicArguments const &args)
     : kit::GameMode(args)
@@ -46,6 +56,9 @@ void lon::SinglePlayerMode::onModeActivated()
 
   m_playerState = engine()->gameManager()->playerState(0);
 
+  inputManager()->onDiscoveredDevice() += [=](auto dev) {
+    dev->assign(m_playerState);
+  };
   /*
   inputManager()->keyboard()->assign(m_playerState);
   inputManager()->mouse()->assign(m_playerState);
@@ -65,6 +78,18 @@ void lon::SinglePlayerMode::onModeActivated()
 
   m_playerState->bindAxis("LookHorizontal", "ma_x", wir::AT_Normal);
   m_playerState->bindAxis("LookVertical", "ma_y", wir::AT_Normal);
+
+  /*
+  m_playerState->bindButton("ToggleVR", "v", wir::BT_Down);
+
+  m_playerState->getButtonEvent("ToggleVR") += [&]() {
+    if (vrManager()->enabled())
+      vrManager()->disable();
+    else 
+      vrManager()->enable();
+
+  };
+  */
 
   m_playerState->getAxisEvent("MoveForward") += [&](float delta)
   {
@@ -126,8 +151,32 @@ void lon::SinglePlayerMode::onWorldLoading()
 void lon::SinglePlayerMode::onWorldStart()
 {
   m_debugCamera = world()->spawnObject<lon::DebugCamera>("Camera");
+  
   m_grass = world()->spawnObject<lon::ProceduralGrass>("Grass");
   
+  auto groundPlane = world()->spawnObject<kit::Object>("GroundPlane");
+  auto groundMesh = groundPlane->spawnComponent<kit::StaticMeshComponent>("GroundMesh");
+  groundMesh->mesh(assetManager()->load<kit::Mesh>("Content/Nature/Meshes/GroundPlane.asset"));
+  groundMesh->attach(groundPlane);
+  
+
+  auto sky = world()->spawnObject<kit::Object>("Sky");
+  auto skyDome = sky->spawnComponent<lon::SkyDomeComponent>("SkyDome");
+  skyDome->attach(sky);
+
+
+  /*
+  auto water = world()->spawnObject<kit::Object>("Water");
+  auto waterComp = water->spawnComponent<lon::WaterComponent>("Watercomp");
+  waterComp->attach(water);
+  
+
+  auto water2 = world()->spawnObject<kit::Object>("Water2");
+  auto waterComp2 = water2->spawnComponent<lon::WaterComponent>("Watercomp2");
+  waterComp2->attach(water2);
+  water2->translate(glm::vec3(0.0f, -2.0f, 0.0f));
+  */
+
   /*
   std::vector<kit::MeshPtr> meshes = {
       assetManager()->load<kit::Mesh>("Content/Glock17/Glock17.asset"),
@@ -190,16 +239,67 @@ void lon::SinglePlayerMode::onWorldStart()
 
 void lon::SinglePlayerMode::onWorldTick(double seconds)
 {
-  m_debugText->render();
+  auto camera = renderManager()->renderer()->camera();
 
-  if (inputManager()->keyboard()->buttonState("f1")->isDown)
+  if (camera)
   {
-    vrManager()->enable();
+    auto fwd = camera->worldForward();
+    auto pos = camera->worldPosition();
+    m_debugText->text(wir::utf8to32(wir::format("Position: %.2f %.2f %.2f\nForward: %.2f %.2f %.2f",
+                                                pos.x, pos.y, pos.z,
+                                                fwd.x, fwd.y, fwd.z)));
   }
-  if (inputManager()->keyboard()->buttonState("f2")->isDown)
+  else 
   {
-    vrManager()->disable();
+    m_debugText->text(wir::utf8to32("No signal"));
   }
+
+
+
+  auto glockTex = assetManager()->load<kit::Texture>("Content/Glock17/Glock17Albedo.asset");
+
+  struct QUAD
+  {
+    glm::vec2 position;
+    glm::vec2 size;
+    glm::vec4 color;
+  };
+  const static int quadNum = 1+(64*4)+(32)+(4*128);
+  static std::array<QUAD, quadNum> quads;
+
+  static bool init = false;
+  if (!init)
+  {
+    for (uint32_t x = 0; x < quadNum; x++)
+    {
+      glm::vec2 pos(wir::randomFloat(0.0f, 1300.0f), wir::randomFloat(0.0f, 800.0f));
+      glm::vec2 size(wir::randomFloat(4.0f, 256.0f));
+      glm::vec4 hsl(wir::randomFloat(0.0f, 1.0f), wir::randomFloat(0.3f, 1.0f), wir::randomFloat(0.2f, 0.8f), wir::randomFloat(0.4f, 1.0f));
+
+      quads[x] = {pos, size, wir::hslaToRgba(hsl)};
+    }
+    init = true;
+  }
+
+  if (glockTex->ready())
+  {
+    auto spriteRenderer = renderManager()->spriteRenderer();
+
+
+    for (uint32_t x = 0; x < quadNum; x++)
+    {
+      spriteRenderer->renderSprite(quads[x].position, quads[x].size, quads[x].color,{0.0f, 0.0f, 1.0f, 1.0f}, glockTex->texture(), glockTex->sampler());
+    }
+    
+
+
+
+    spriteRenderer->renderSprite({512.0f, 8.0f}, {128.0f, 256.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, glockTex->texture(), glockTex->sampler());
+
+      
+  }
+    
+  m_debugText->render();
 }
 
 void lon::SinglePlayerMode::onWorldDestroyed()

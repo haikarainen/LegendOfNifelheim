@@ -12,20 +12,13 @@
 
 namespace lon
 {
-  class GrassMaterial;
+  class SkyMaterial;
 
-  struct LONAPI ProceduralGrassVertex
-  {
-    glm::vec3 root;
-    glm::vec3 offset;
-    glm::vec3 normal;
-  };
-
-  class LONAPI GrassMaterialParameters : public kit::MaterialParameters
+  class LONAPI SkyMaterialParameters : public kit::MaterialParameters
   {
   public:
-    GrassMaterialParameters(lon::GrassMaterial *materialClass);
-    virtual ~GrassMaterialParameters();
+    SkyMaterialParameters(lon::SkyMaterial *materialClass);
+    virtual ~SkyMaterialParameters();
 
     virtual bool deserialize(wir::Stream &fromData) override;
 
@@ -37,13 +30,13 @@ namespace lon
     bool m_texturesSet = false;
   };
 
-  class LONAPI GrassMaterial : public kit::MaterialClass
+  class LONAPI SkyMaterial : public kit::MaterialClass
   {
     WIR_CLASS_DECLARATION()
   public:
-    GrassMaterial(wir::DynamicArguments const &args);
-    GrassMaterial(kit::Renderer *renderer);
-    virtual ~GrassMaterial();
+    SkyMaterial(wir::DynamicArguments const &args);
+    SkyMaterial(kit::Renderer *renderer);
+    virtual ~SkyMaterial();
 
     virtual kit::MaterialParameters *createParameters() override;
     virtual void destroyParameters(kit::MaterialParameters *parameters) override;
@@ -57,17 +50,6 @@ namespace lon
       return m_defaultIrradiance;
     }
 
-    kit::TexturePtr testMap() const
-    {
-      return m_testMap;
-    }
-
-    
-    kit::TexturePtr terrainHeight() const
-    {
-      return m_terrainHeight;
-    }
-
     virtual bool isReady() override;
 
     virtual void updateTarget() override;
@@ -78,23 +60,20 @@ namespace lon
     bool m_texturesSet = false;
 
     kit::TexturePtr m_defaultIrradiance;
-    kit::TexturePtr m_testMap;
-    kit::TexturePtr m_terrainHeight;
-
-    /*struct
+    /*
+    struct
     {
       odin::Shader *vertexShader = nullptr;
       odin::Shader *fragmentShader = nullptr;
       odin::Program *program = nullptr;
-    } m_vr;*/
-
+    } m_vr;
+    */
     struct
     {
       odin::Shader *vertexShader = nullptr;
       odin::Shader *fragmentShader = nullptr;
       odin::Program *program = nullptr;
     } m_regular;
-
   };
 
 } // namespace lon

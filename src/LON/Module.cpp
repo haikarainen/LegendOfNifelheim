@@ -8,10 +8,16 @@
 #include "LON/Objects/PlayerController.hpp"
 #include "LON/Objects/MapEditor.hpp"
 
+#include "LON/Components/SkyDomeComponent.hpp"
+#include "LON/Components/WaterComponent.hpp"
+
 #include "LON/MaterialClasses/GrassMaterial.hpp"
+#include "LON/MaterialClasses/SkyMaterial.hpp"
+#include "LON/MaterialClasses/WaterMaterial.hpp"
 
 #include <KIT/Engine.hpp>
 #include <KIT/Managers/GameManager.hpp>
+#include <KIT/Managers/InputManager.hpp>
 #include <KIT/Configuration.hpp>
 
 #include <WIR/Error.hpp>
@@ -35,13 +41,24 @@ void lon::Module::initialize(kit::Configuration *configuration)
   lon::MapEditor::initializeClass();
   lon::DebugCamera::initializeClass();
   lon::ProceduralGrass::initializeClass();
+  
+  lon::WaterComponent::initializeClass();
+  lon::SkyDomeComponent::initializeClass();
 
   lon::GrassMaterial::initializeClass();
+  lon::SkyMaterial::initializeClass();
+  lon::WaterMaterial::initializeClass();
 
-  m_singlePlayerMode = new lon::SinglePlayerMode(engine()->gameManager());
+
+
+  auto game = gameManager();
+  auto input = inputManager();
+  auto playerOne = game->playerState(0);
+
 
   // Always start in singleplayermode
-  engine()->gameManager()->mode(m_singlePlayerMode);
+  m_singlePlayerMode = new lon::SinglePlayerMode(game);
+  game->mode(m_singlePlayerMode);
 }
 
 void lon::Module::shutdown()

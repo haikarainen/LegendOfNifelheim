@@ -59,7 +59,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4251;4250</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>$(KITEngine)include\;$(Odin)include;$(WIRFramework)include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BT_USE_DOUBLE_PRECISION;_ENABLE_EXTENDED_ALIGNED_STORAGE;LON_BUILD;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -89,7 +89,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4251;4250</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>$(KITEngine)include\;$(Odin)include;$(WIRFramework)include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BT_USE_DOUBLE_PRECISION;_ENABLE_EXTENDED_ALIGNED_STORAGE;LON_BUILD;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -114,8 +114,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\LON\Components\SkyDomeComponent.hpp" />
+    <ClInclude Include="include\LON\Components\WaterComponent.hpp" />
     <ClInclude Include="include\LON\Export.hpp" />
     <ClInclude Include="include\LON\MaterialClasses\GrassMaterial.hpp" />
+    <ClInclude Include="include\LON\MaterialClasses\SkyMaterial.hpp" />
+    <ClInclude Include="include\LON\MaterialClasses\WaterMaterial.hpp" />
     <ClInclude Include="include\LON\Module.hpp" />
     <ClInclude Include="include\LON\Objects\Camera.hpp" />
     <ClInclude Include="include\LON\Objects\DebugCamera.hpp" />
@@ -123,21 +127,18 @@
     <ClInclude Include="include\LON\Objects\PlayerCharacter.hpp" />
     <ClInclude Include="include\LON\Objects\PlayerController.hpp" />
     <ClInclude Include="include\LON\Objects\Nature\ProceduralGrass.hpp" />
+    <ClInclude Include="include\LON\RenderEntities\GridMeshEntity.hpp" />
+    <ClInclude Include="include\LON\RenderEntities\SkydomeEntity.hpp" />
     <ClInclude Include="include\LON\SinglePlayerMode.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="generated\LON\Export.generated.cpp" />
-    <ClCompile Include="generated\LON\MaterialClasses\GrassMaterial.generated.cpp" />
-    <ClCompile Include="generated\LON\Module.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\Camera.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\DebugCamera.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\MapEditor.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\Nature\ProceduralGrass.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\PlayerCharacter.generated.cpp" />
-    <ClCompile Include="generated\LON\Objects\PlayerController.generated.cpp" />
-    <ClCompile Include="generated\LON\SinglePlayerMode.generated.cpp" />
+    <ClCompile Include="generated\**\*.generated.cpp" />
+    <ClCompile Include="src\LON\Components\SkyDomeComponent.cpp" />
+    <ClCompile Include="src\LON\Components\WaterComponent.cpp" />
     <ClCompile Include="src\LON\Main.cpp" />
     <ClCompile Include="src\LON\MaterialClasses\GrassMaterial.cpp" />
+    <ClCompile Include="src\LON\MaterialClasses\SkyMaterial.cpp" />
+    <ClCompile Include="src\LON\MaterialClasses\WaterMaterial.cpp" />
     <ClCompile Include="src\LON\Module.cpp" />
     <ClCompile Include="src\LON\Objects\Camera.cpp" />
     <ClCompile Include="src\LON\Objects\DebugCamera.cpp" />
@@ -145,6 +146,8 @@
     <ClCompile Include="src\LON\Objects\Nature\ProceduralGrass.cpp" />
     <ClCompile Include="src\LON\Objects\PlayerCharacter.cpp" />
     <ClCompile Include="src\LON\Objects\PlayerController.cpp" />
+    <ClCompile Include="src\LON\RenderEntities\GridMeshEntity.cpp" />
+    <ClCompile Include="src\LON\RenderEntities\SkyDomeEntity.cpp" />
     <ClCompile Include="src\LON\SinglePlayerMode.cpp" />
   </ItemGroup>
   <ItemGroup>

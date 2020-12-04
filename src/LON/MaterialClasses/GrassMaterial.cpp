@@ -19,16 +19,13 @@ lon::GrassMaterialParameters::~GrassMaterialParameters()
 
 bool lon::GrassMaterialParameters::deserialize(wir::Stream &fromData)
 {
-  auto assMan = materialClass()->renderer()->assetManager();
-  auto vrMan = materialClass()->renderer()->vrManager();
-
   auto rp = m_regular.parameters->uniformBuffer("parameters");
   rp->set("mvpMatrix", glm::mat4(1.0f));
   rp->set("mvMatrix", glm::mat4(1.0f));
   rp->set("normalMatrix", glm::mat3(1.0f));
   rp->set("invViewMatrix", glm::mat4(1.0f));
-
-  if (vrMan->supported())
+  /*
+  if (vrManager()->supported())
   {
     auto vp = m_vr.parameters->uniformBuffer("parameters");
     vp->set("mvpMatrixLeft", glm::mat4(1.0f));
@@ -40,16 +37,17 @@ bool lon::GrassMaterialParameters::deserialize(wir::Stream &fromData)
     vp->set("normalMatrixRight", glm::mat3(1.0f));
     vp->set("invViewMatrixRight", glm::mat4(1.0f));
   }
+  */
   return true;
 }
 
 void lon::GrassMaterialParameters::updateEntity(kit::SceneParameters const &pScene, kit::EntityParameters const &pEntity)
 {
-  auto renderer = materialClass()->renderer();
+  auto renderer = renderManager()->renderer();
   auto camera = renderer->camera();
-  auto vrMan = renderer->vrManager();
 
-  if (vrMan->supported())
+  /*
+  if (vrManager()->supported())
   {
     auto mvMatrixLeft = camera->viewEyeMatrix(odin::VE_Left) * pEntity.modelMatrix;
     auto mvpMatrixLeft = camera->projectionMatrix(odin::VE_Left) * camera->viewEyeMatrix(odin::VE_Left) * pEntity.modelMatrix;
@@ -68,11 +66,13 @@ void lon::GrassMaterialParameters::updateEntity(kit::SceneParameters const &pSce
     vp->set("mvMatrixRight", mvMatrixRight);
     vp->set("normalMatrixRight", normalMatrixRight);
     vp->set("invViewMatrixRight", glm::inverse(camera->viewEyeMatrix(odin::VE_Right)));
+    vp->set("seconds", pScene.seconds);
   }
+  */
 
   {
     auto mvMatrix = camera->viewMatrix() * pEntity.modelMatrix;
-    auto mvpMatrix = camera->projectionMatrix(odin::VE_Left) * camera->viewMatrix() * pEntity.modelMatrix;
+    auto mvpMatrix = camera->projectionMatrix(/*odin::VE_Left*/) * camera->viewMatrix() * pEntity.modelMatrix;
     glm::mat3 normalMatrix = glm::transpose(glm::inverse(mvMatrix));
 
     auto rp = m_regular.parameters->uniformBuffer("parameters");
@@ -80,6 +80,7 @@ void lon::GrassMaterialParameters::updateEntity(kit::SceneParameters const &pSce
     rp->set("mvMatrix", mvMatrix);
     rp->set("normalMatrix", normalMatrix);
     rp->set("invViewMatrix", glm::inverse(camera->viewMatrix()));
+    rp->set("seconds", pScene.seconds);
   }
 }
 
@@ -91,12 +92,16 @@ bool lon::GrassMaterialParameters::isReady()
 
     m_regular.parameters->set("irradiance", mc->defaultIrradiance()->texture(), mc->defaultIrradiance()->sampler());
     m_regular.parameters->set("testMap", mc->testMap()->texture(), mc->testMap()->sampler());
+    m_regular.parameters->set("terrainHeight", mc->terrainHeight()->texture(), mc->terrainHeight()->sampler());
 
-    if (mc->renderer()->vrManager()->supported())
+    /*
+    if (vrManager()->supported())
     {
       m_vr.parameters->set("irradiance", mc->defaultIrradiance()->texture(), mc->defaultIrradiance()->sampler());
       m_vr.parameters->set("testMap", mc->testMap()->texture(), mc->testMap()->sampler());
+      m_vr.parameters->set("terrainHeight", mc->terrainHeight()->texture(), mc->terrainHeight()->sampler());
     }
+    */
 
     m_texturesSet = true;
 
@@ -122,12 +127,14 @@ lon::GrassMaterial::~GrassMaterial()
   delete m_regular.fragmentShader;
   delete m_regular.vertexShader;
 
+  /*
   if (renderer()->vrManager()->supported())
   {
     delete m_vr.program;
     delete m_vr.fragmentShader;
     delete m_vr.vertexShader;
   }
+  */
 }
 
 kit::MaterialParameters *lon::GrassMaterial::createParameters()
@@ -146,19 +153,21 @@ odin::Program *lon::GrassMaterial::regularProgram() const
   return m_regular.program;
 }
 
+/*
 odin::Program *lon::GrassMaterial::vrProgram() const
 {
   return m_vr.program;
 }
+*/
 
 int64_t lon::GrassMaterial::order() const
 {
-  return 0;
+  return 1000;
 }
 
 bool lon::GrassMaterial::isReady()
 {
-  return (m_defaultIrradiance && m_defaultIrradiance->status() == kit::AS_Ready);
+  return (m_defaultIrradiance && m_defaultIrradiance->ready() && m_testMap && m_testMap->ready() && m_terrainHeight && m_terrainHeight->ready());
 }
 
 void lon::GrassMaterial::updateTarget()
@@ -168,27 +177,32 @@ void lon::GrassMaterial::updateTarget()
 
 void lon::GrassMaterial::initialize()
 {
-  auto context = m_renderer->renderManager()->context();
+  auto context = renderManager()->context();
   odin::PipelineSettings settings;
   settings.samples = 8;
   settings.depthCompareOp = odin::CO_Greater;
   //settings.cullingMode = odin::CM_None;
 
-  if (m_renderer->vrManager()->supported())
+  /*
+  if (vrManager()->supported())
   {
     m_vr.fragmentShader = new odin::Shader(context, odin::SS_Fragment, "Content/Nature/ProceduralGrass/Shaders/ProceduralGrass.fragment.glsl", {{"VR", "1"}});
     m_vr.vertexShader = new odin::Shader(context, odin::SS_Vertex, "Content/Nature/ProceduralGrass/Shaders/ProceduralGrass.vertex.glsl", {{"VR", "1"}});
     m_vr.program = new odin::Program(context, {m_vr.vertexShader, m_vr.fragmentShader}, settings, 4096);
     m_vr.program->vertexStride(sizeof(lon::ProceduralGrassVertex));
+    m_vr.program->inputRate("instancePosition", odin::IR_PerInstance);
     m_vr.program->link();
   }
+  */
 
   m_regular.fragmentShader = new odin::Shader(context, odin::SS_Fragment, "Content/Nature/ProceduralGrass/Shaders/ProceduralGrass.fragment.glsl");
   m_regular.vertexShader = new odin::Shader(context, odin::SS_Vertex, "Content/Nature/ProceduralGrass/Shaders/ProceduralGrass.vertex.glsl");
   m_regular.program = new odin::Program(context, {m_regular.vertexShader, m_regular.fragmentShader}, settings, 4096);
   m_regular.program->vertexStride(sizeof(lon::ProceduralGrassVertex));
+  m_regular.program->inputRate("instancePosition", odin::IR_PerInstance);
   m_regular.program->link();
 
-  m_defaultIrradiance = m_renderer->assetManager()->load<kit::Texture>("Content/Nature/ProceduralGrass/HDRi/Irradiance.asset");
-  m_testMap = m_renderer->assetManager()->load<kit::Texture>("Content/Nature/ProceduralGrass/Textures/TestMap.asset");
+  m_defaultIrradiance = assetManager()->load<kit::Texture>("Content/Nature/HDRi/Irradiance.asset");
+  m_testMap = assetManager()->load<kit::Texture>("Content/Nature/ProceduralGrass/Textures/TestMap.asset");
+  m_terrainHeight = assetManager()->load<kit::Texture>("Content/Nature/ProceduralGrass/Textures/TerrainHeight.asset");
 }

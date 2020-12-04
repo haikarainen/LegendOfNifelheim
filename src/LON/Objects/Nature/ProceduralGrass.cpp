@@ -8,8 +8,10 @@
 
 #include <KIT/Renderer/RenderGeometry.hpp>
 #include <KIT/Renderer/Renderer.hpp>
+#include <KIT/Renderer/RenderEntities/MeshInstance.hpp>
+#include <KIT/Renderer/RenderInstances.hpp>
 
-
+#include <vector>
 
 lon::ProceduralGrass::ProceduralGrass()
 {
@@ -42,7 +44,7 @@ void lon::ProceduralGrass::onInitialize()
 
   std::vector<ProceduralGrassVertex> leafVertices = {
 
-      {{0.0f, 0.0f, 0.0f}, {0.0f, -1.0511f, 0.0f}, kit::Transformable::forward()},   // 0
+      {{0.0f, 0.0f, 0.0f}, {0.0f, -1.0511f, 0.0f},      kit::Transformable::forward()},   // 0
       {{0.0f, 0.0f, 0.0f}, {-0.02407, -0.69759, 0.0f},  kit::Transformable::forward()}, // 1
       {{0.0f, 0.0f, 0.0f}, {0.02407, -0.69759, 0.0f},   kit::Transformable::forward()},  // 2
       {{0.0f, 0.0f, 0.0f}, {-0.032376, -0.34403, 0.0f}, kit::Transformable::forward()}, // 3 
@@ -94,10 +96,10 @@ void lon::ProceduralGrass::onInitialize()
 
   float patchSize = 5.0f;
 
-  uint32_t numRoots = 64;
-  glm::uvec2 leafsInRoot(3, 5);
-  glm::vec3 rotationRange(15.0f, 90.0f, 15.0f);
-  glm::vec2 scaleRange(0.67f, 1.2f);
+  uint32_t numRoots = 32;
+  glm::uvec2 leafsInRoot(3, 7);
+  glm::vec3 rotationRange(25.0f, 90.0f, 25.0f);
+  glm::vec2 scaleRange(0.67f, 1.75f);
   //glm::vec3 rotationRange(0.0f, 0.f, 0.f);
   for (uint32_t x = 0; x < numRoots; x++)
   {
@@ -135,6 +137,28 @@ void lon::ProceduralGrass::onInitialize()
   auto newPatch = std::make_shared<kit::Mesh>(assetManager(), patchGeometry, m_material);
   m_patches.push_back(newPatch);
   auto newPatchInstance = new kit::MeshInstance(engine(), newPatch);
+
+
+  std::vector<glm::vec4> instances;
+  for (uint32_t x = 0; x < 10; x++)
+  {
+    for (uint32_t y = 0; y < 10; y++)
+    {
+      float xPos = float(x) * patchSize;
+      float yPos = float(y) * patchSize;
+
+      instances.push_back(glm::vec4(xPos, 0.0f, yPos, 1.0f));
+    }
+  }
+
+  newPatchInstance->instances()->update(
+    reinterpret_cast<uint8_t*>(instances.data()),
+    instances.size() * sizeof(glm::vec4),
+    instances.size()
+  );
+  
+
+
   m_chunks[newPatch] = newPatchInstance;
 
   auto renderer = renderManager()->renderer();
